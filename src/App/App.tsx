@@ -4,48 +4,40 @@ import MovieGrid from "../MovieGrid/MovieGrid";
 import { Toaster, toast } from "react-hot-toast";
 import { useState } from "react";
 import type { Movie } from "../types/movie";
-import axios from "axios";
 import Loader from "../Loader/Loader";
-
-const myKey = import.meta.env.VITE_TMDB_TOKEN;
-
-interface AxiosMovieRespons {
-  results: Movie[];
-}
+import { fetchMovies } from "../services/movieService";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import MovieModal from "../MovieModal/MovieModal";
 
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   const handleSearch = async (formData: FormData) => {
     setIsLoading(true);
     const query = formData.get("query")?.toString().trim();
 
-    if (!query) return;
+    if (!query) {
+      setIsLoading(false);
+      return;
+    }
 
     setMovies([]);
 
     try {
-      const response = await axios.get<AxiosMovieRespons>(
-        `https://api.themoviedb.org/3/search/movie`,
-        {
-          params: { query },
-          headers: {
-            Authorization: `Bearer ${myKey}`,
-          },
-        }
-      );
+      //Using the remote function axios
+      const results = await fetchMovies(query);
 
-      const data = response.data;
-
-      if (data.results.length === 0) {
+      if (results.length === 0) {
         toast.error("No movies found for your request.");
         return;
       }
 
-      setMovies(data.results);
+      setMovies(results);
     } catch {
-      toast.error("Something went wrong. Please try again.");
+      setIsError(true);
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +51,14 @@ export default function App() {
       {movies.length > 0 && (
         <MovieGrid
           movies={movies}
-          onSelect={(movie) => console.log("Клік по фільму:", movie)}
+          onSelect={(movie) => setSelectedMovie(movie)}
+        />
+      )}
+      {isError && <ErrorMessage />}
+      {selectedMovie && (
+        <MovieModal
+          onClose={() => setSelectedMovie(null)}
+          movie={selectedMovie}
         />
       )}
     </div>
