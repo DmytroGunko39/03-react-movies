@@ -15,11 +15,11 @@ export default function App() {
   const [isError, setIsError] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const handleSearch = async (formData: FormData) => {
+  const handleSearch = async (query: string) => {
     setIsLoading(true);
-    const query = formData.get("query")?.toString().trim();
+    setIsError(false);
 
-    if (!query) {
+    if (!query.trim()) {
       setIsLoading(false);
       return;
     }
@@ -64,3 +64,13 @@ export default function App() {
     </div>
   );
 }
+
+/* <img
+  src={
+    movie.backdrop_path
+      ? `https://image.tmdb.org/t/p/original/${movie.backdrop_path}`
+      : `https://image.tmdb.org/t/p/original/${movie.poster_path}`
+  }
+  alt={movie.title}
+  className={css.image}
+/>; */
