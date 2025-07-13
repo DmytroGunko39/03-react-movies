@@ -3,9 +3,9 @@ import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import { Toaster, toast } from "react-hot-toast";
 import { useState } from "react";
-import type { Movie } from "../types/movie";
+import type { Movie } from "../../types/movie";
 import Loader from "../Loader/Loader";
-import { fetchMovies } from "../services/movieService";
+import { fetchMovies } from "../../services/movieService";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
 
